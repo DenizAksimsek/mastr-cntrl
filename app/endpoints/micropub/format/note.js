@@ -15,12 +15,11 @@ exports.note = function note(micropubContent) {
     const tags = handleTags.formatTags(micropubContent);
     const targetArray = handleTargets.formatTargets(micropubContent);
     const entry = `---
-title: "Note for ${pubDate}"
 date: "${pubDate}"
-meta: "note posted on ${pubDate}"
 tags:${tags}
 ${targetArray}
 ---
+
 ${content}
 `;
 

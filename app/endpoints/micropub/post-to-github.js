@@ -28,14 +28,13 @@ exports.micropubPost = function micropubPost(req, res) {
     try {
         publishedDate = req.body.properties.published[0];
     } catch (e) {
-        publishedDate = moment(new Date()).tz('Pacific/Auckland').format('YYYY-MM-DDTHH:mm:ss+00:00');
+        publishedDate = moment(new Date()).utcOffset('+0300').format('YYYY-MM-DDTHH:mm:ss+00:00');
     }
 
     //Format date time for naming file.
     const postFileNameDate = publishedDate.slice(0, 10);
     const postFileNameTime = publishedDate.replace(/:/g, '-').slice(11, -9);
-    const responseDate = postFileNameDate.replace(/-/g, '/');
-    const responseLocationTime = publishedDate.slice(11, -12) + '-' + publishedDate.slice(14, -9);
+    const responseDateTime = postFileNameDate.replace(/-/g, '') + 'T' + publishedDate.slice(11, -12) + publishedDate.slice(14, -9);
 
     // Micropub Action (only fires if authentication passes)
     function micropubAction(json) {
@@ -47,25 +46,25 @@ exports.micropubPost = function micropubPost(req, res) {
         case (serviceIdentifier === 'https://ownyourswarm.p3k.io') :
             micropubType = 'checkins';
             payload = formatCheckin.checkIn(micropubContent);
-            fileLocation = 'src/_content/checkins';
+            fileLocation = 'var/checkins';
             commitMessage = 'Checkin created via ownyourswarm';
             break;
         case (micropubContent.hasOwnProperty('bookmark-of')):
             micropubType = 'links';
             payload = formatBookmark.bookmark(micropubContent);
-            fileLocation = 'src/_content/links';
+            fileLocation = 'var/links';
             commitMessage = 'Bookmark created';
             break;
         case (micropubContent.hasOwnProperty('like-of')):
             micropubType = 'favourites';
             payload = formatFavourite.favourite(micropubContent);
-            fileLocation = 'src/_content/favourites';
+            fileLocation = 'var/favourites';
             commitMessage = 'Favourite created';
             break;
         case (micropubContent.hasOwnProperty('in-reply-to')):
             micropubType = 'replies';
             payload = formatReplies.replies(micropubContent);
-            fileLocation = 'src/_content/replies';
+            fileLocation = 'replies';
             commitMessage = 'Reply created';
             break;
         default:
@@ -74,19 +73,21 @@ exports.micropubPost = function micropubPost(req, res) {
                 micropubContent.properties.hasOwnProperty('photo');
                 micropubType = 'photos';
                 payload = formatPhoto.photo(micropubContent);
-                fileLocation = 'src/_content/photos';
+                fileLocation = 'photos';
                 commitMessage = 'Photo post created';
             } catch (e) {
                 micropubType = 'notes';
                 payload = formatNote.note(micropubContent);
-                fileLocation = 'src/_content/notes';
+                fileLocation = 'notes';
                 commitMessage = 'Note created';
             }
         }
 
         logger.info('Micropub content is: ' + micropubType);
         fileName = `${postFileNameDate}-${postFileNameTime}.md`;
-        responseLocation = `https://vincentp.me/${micropubType}/${responseDate}/${responseLocationTime}/`;
+        responseLocation = `https://www.denizaksimsek.com/${micropubType}/${
+            ['notes', 'links', 'photos', 'favourites'].includes(micropubType) ?
+              responseDateTime : responseSlug}`;
 
         githubApi.publish(req, res, fileLocation, fileName, responseLocation, payload, commitMessage);
     }
