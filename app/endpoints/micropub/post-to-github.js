@@ -32,9 +32,9 @@ exports.micropubPost = function micropubPost(req, res) {
     }
 
     //Format date time for naming file.
-    const postFileNameDate = publishedDate.slice(0, 10);
-    const postFileNameTime = publishedDate.replace(/:/g, '-').slice(11, -9);
-    const responseDateTime = postFileNameDate.replace(/-/g, '') + 'T' + publishedDate.slice(11, -12) + publishedDate.slice(14, -9);
+    const postFileNameDate = publishedDate.slice(0, 10).replace(/-/g, '');
+    const postFileNameTime = publishedDate.slice(11, -9).replace(/:/g, '');
+    const responseDateTime = postFileNameDate + 'T' + postFileNameTime;
 
     // Micropub Action (only fires if authentication passes)
     function micropubAction(json) {
@@ -84,7 +84,7 @@ exports.micropubPost = function micropubPost(req, res) {
         }
 
         logger.info('Micropub content is: ' + micropubType);
-        fileName = `${postFileNameDate}-${postFileNameTime}.md`;
+        fileName = `${postFileNameDate}T${postFileNameTime}.md`;
         responseLocation = `https://www.denizaksimsek.com/${micropubType}/${
             ['notes', 'links', 'photos', 'favourites'].includes(micropubType) ?
               responseDateTime : responseSlug}`;
