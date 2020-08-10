@@ -28,7 +28,7 @@ exports.micropubPost = function micropubPost(req, res) {
     try {
         publishedDate = req.body.properties.published[0];
     } catch (e) {
-        publishedDate = moment(new Date()).utcOffset('+0300').format('YYYY-MM-DDTHH:mm:ss+00:00');
+        publishedDate = moment.utc().utcOffset('+0300').format('YYYY-MM-DDTHH:mm:ss') + '+0300';
     }
 
     //Format date time for naming file.
