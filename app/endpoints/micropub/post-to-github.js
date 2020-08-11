@@ -33,7 +33,7 @@ exports.micropubPost = function micropubPost(req, res) {
 
     //Format date time for naming file.
     const postFileNameDate = publishedDate.slice(0, 10).replace(/-/g, '');
-    const postFileNameTime = publishedDate.slice(11, -9).replace(/:/g, '');
+    const postFileNameTime = publishedDate.slice(11, -8).replace(/:/g, '');
     const responseDateTime = postFileNameDate + 'T' + postFileNameTime;
 
     // Micropub Action (only fires if authentication passes)
