@@ -11,9 +11,9 @@ exports.formatTags = function formatTags(micropubContent) {
     logger.info('Checking for tags');
     try {
         tagArray = micropubContent.category;
+        if (tagArray instanceof String) tagArray = [tagArray];
         for (let i = 0; i < tagArray.length; i++) {
-            tags += '\n- ';
-            tags += tagArray[i];
+            tags += `\n- ${tagArray[i]}`;
             logger.info('Found tag ' + tagArray[i]);
         }
     } catch (e) {
