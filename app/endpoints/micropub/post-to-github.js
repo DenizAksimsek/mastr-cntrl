@@ -12,6 +12,7 @@ const githubApi = require(appRootDirectory + '/app/github/post-to-api');
 exports.micropubPost = function micropubPost(req, res) {
     let serviceIdentifier = '';
     let fileName;
+    let responseSlug;
     let responseLocation;
     let payload;
     let publishedDate;
@@ -86,7 +87,7 @@ exports.micropubPost = function micropubPost(req, res) {
         logger.info('Micropub content is: ' + micropubType);
         fileName = `${postFileNameDate}T${postFileNameTime}.md`;
         responseLocation = `https://www.denizaksimsek.com/${micropubType}/${
-            ['notes', 'links', 'photos', 'favourites'].includes(micropubType) ?
+            ['notes', 'links', 'photos', 'favourites', 'replies'].includes(micropubType) ?
               responseDateTime : responseSlug}`;
 
         githubApi.publish(req, res, fileLocation, fileName, responseLocation, payload, commitMessage);
