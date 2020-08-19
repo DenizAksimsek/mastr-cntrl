@@ -1,12 +1,7 @@
 const fetch = require('node-fetch');
 const moment = require('moment');
 const logger = require(appRootDirectory + '/app/logging/bunyan');
-const formatCheckin = require(appRootDirectory + '/app/endpoints/micropub/format/checkin');
-const formatNote = require(appRootDirectory + '/app/endpoints/micropub/format/note');
-const formatPhoto = require(appRootDirectory + '/app/endpoints/micropub/format/photo');
-const formatBookmark = require(appRootDirectory + '/app/endpoints/micropub/format/links');
-const formatFavourite = require(appRootDirectory + '/app/endpoints/micropub/format/favourite');
-const formatReplies = require(appRootDirectory + '/app/endpoints/micropub/format/replies');
+const format = require(appRootDirectory + '/app/endpoints/micropub/format/format');
 const githubApi = require(appRootDirectory + '/app/github/post-to-api');
 
 exports.micropubPost = function micropubPost(req, res) {
@@ -25,7 +20,6 @@ exports.micropubPost = function micropubPost(req, res) {
 
     logger.info('json body ' + JSON.stringify(req.body)); //Log packages sent, for debug
 
-    //Some P3K services send the published date-time. Others do not. Check if it exists, and if not do it ourselves.
     try {
         publishedDate = req.body.properties.published[0];
     } catch (e) {
@@ -35,7 +29,7 @@ exports.micropubPost = function micropubPost(req, res) {
     //Format date time for naming file.
     const postFileNameDate = publishedDate.slice(0, 10).replace(/-/g, '');
     const postFileNameTime = publishedDate.slice(11, -8).replace(/:/g, '');
-    const responseDateTime = postFileNameDate + 'T' + postFileNameTime;
+    const dateTime = postFileNameDate + 'T' + postFileNameTime;
 
     // Micropub Action (only fires if authentication passes)
     function micropubAction(json) {
@@ -43,52 +37,11 @@ exports.micropubPost = function micropubPost(req, res) {
         logger.info('Service is: ' + serviceIdentifier);
         logger.info('Payload JSON: ' + JSON.stringify(micropubContent));
 
-        switch (true) {
-        case (serviceIdentifier === 'https://ownyourswarm.p3k.io') :
-            micropubType = 'checkins';
-            payload = formatCheckin.checkIn(micropubContent);
-            fileLocation = 'var/checkins';
-            commitMessage = 'Checkin created via ownyourswarm';
-            break;
-        case (micropubContent.hasOwnProperty('bookmark-of')):
-            micropubType = 'links';
-            payload = formatBookmark.bookmark(micropubContent);
-            fileLocation = 'var/links';
-            commitMessage = 'Bookmark created';
-            break;
-        case (micropubContent.hasOwnProperty('like-of')):
-            micropubType = 'favourites';
-            payload = formatFavourite.favourite(micropubContent);
-            fileLocation = 'var/favourites';
-            commitMessage = 'Favourite created';
-            break;
-        case (micropubContent.hasOwnProperty('in-reply-to')):
-            micropubType = 'replies';
-            payload = formatReplies.replies(micropubContent);
-            fileLocation = 'replies';
-            commitMessage = 'Reply created';
-            break;
-        default:
-            // This is a pain. If micropubContent.properties test is a switch clause it causes the server to crash, when NULL. Wrapping it in a try/catch gets around the issue
-            try {
-                micropubContent.properties.hasOwnProperty('photo');
-                micropubType = 'photos';
-                payload = formatPhoto.photo(micropubContent);
-                fileLocation = 'photos';
-                commitMessage = 'Photo post created';
-            } catch (e) {
-                micropubType = 'notes';
-                payload = formatNote.note(micropubContent);
-                fileLocation = 'notes';
-                commitMessage = 'Note created';
-            }
-        }
-
-        logger.info('Micropub content is: ' + micropubType);
-        fileName = `${postFileNameDate}T${postFileNameTime}.md`;
-        responseLocation = `https://www.denizaksimsek.com/${micropubType}/${
-            ['notes', 'links', 'photos', 'favourites', 'replies'].includes(micropubType) ?
-              responseDateTime : responseSlug}`;
+        payload = format(micropubContent);
+        commitMessage = 'Entry created';
+        fileLocation = '_data/contents'
+        fileName = `${dateTime}.json`;
+        responseLocation = `https://www.denizaksimsek.com/${dateTime}`;
 
         githubApi.publish(req, res, fileLocation, fileName, responseLocation, payload, commitMessage);
     }

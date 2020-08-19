@@ -16,7 +16,7 @@ exports.formatTargets = function formatTargets(micropubContent) {
             targetsTemp += '\n- ';
             targetsTemp += targetArray[j];
         }
-        targets = `syndicationTargets: ${targetsTemp}`;
+        targets = `syndication: ${targetsTemp}`;
         logger.info(targets);
     } catch (e) {
         logger.info('No Syndication targets');
