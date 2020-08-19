@@ -10,12 +10,12 @@ const handleTargets = require(appRootDirectory + functionPath + 'syndication-tar
 module.exports = function format(micropubContent) {
     logger.info('JSON received: ' + JSON.stringify(micropubContent));
 
-    const pubDate = handleDateTime.formatDateTime();
+    const date = handleDateTime.formatDateTime();
     const content = handleContent.formatContent(micropubContent);
     const tags = handleTags.formatTags(micropubContent);
     const targetArray = handleTargets.formatTargets(micropubContent);
 
-    const entry = JSON.stringify({ date: pubDate, tags, content, syndication: targets })
+    const entry = JSON.stringify({ date, tags, content })
 
     logger.info('Note formatter finished: ' + entry);
     return entry;
