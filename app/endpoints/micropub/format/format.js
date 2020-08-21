@@ -13,8 +13,8 @@ function ensureArray(x) {
 	return x instanceof Array ? x : [x]
 }
 
-module.exports = function format(micropubContent) {
-    logger.info('JSON received: ' + JSON.stringify(micropubContent));
+module.exports = function format(mp) {
+    logger.info('JSON received: ' + JSON.stringify(mp));
     const frontmatter = `
 date: ${moment(mp.date).toISOString()}
 ${mp.name && `name: ${mp.name}`}
