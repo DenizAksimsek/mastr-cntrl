@@ -26,7 +26,7 @@ ${mp.syndication ? `syndication: [${ensureArray(mp.syndication).join(', ')}]` : 
 
     const entry = `---${frontmatter}---
 
-${mp.content || ''}
+${ensureArray(mp.content).join('\n\n') || ''}
 `
 
     logger.info('Note formatter finished: ' + entry);
