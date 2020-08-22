@@ -18,10 +18,9 @@ module.exports = function format(mp) {
     const frontmatter = `
 date: ${moment(mp.date).toISOString()}
 ${mp.name ? `name: ${mp.name}` : ''}
-${mp.category ? `tags: [${ensureArray(mp.name).join(', ')}]
+${mp.category ? `tags: [${ensureArray(mp.category).join(', ')}]
 ` : ''}${mp['in-reply-to'] ? `replyTo: ${mp['in-reply-to']}
 ` : ''}${mp['like-of'] ? `likeOf: ${mp['like-of']}
-` : ''}${mp.syndication ? `syndication: [${ensureArray(mp.syndication).join(', ')}]
 ` : ''}`.replace(/\n+/, '\n')
 
     const entry = `---${frontmatter}---
