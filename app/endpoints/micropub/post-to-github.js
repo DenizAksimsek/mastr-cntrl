@@ -40,7 +40,7 @@ exports.micropubPost = function micropubPost(req, res) {
         payload = format(micropubContent);
         commitMessage = 'Entry created';
         fileLocation = 'content'
-        fileName = `${dateTime}.html`;
+        fileName = `${dateTime}.md`;
         responseLocation = `https://www.denizaksimsek.com/${dateTime}`;
 
         githubApi.publish(req, res, fileLocation, fileName, responseLocation, payload, commitMessage);
