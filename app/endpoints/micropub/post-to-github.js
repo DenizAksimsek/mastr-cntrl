@@ -39,7 +39,7 @@ exports.micropubPost = function micropubPost(req, res) {
 
         payload = format(micropubContent);
         commitMessage = 'Entry created';
-        fileLocation = 'content'
+        fileLocation = 'entries'
         fileName = `${dateTime}.md`;
         responseLocation = `https://www.denizaksimsek.com/${dateTime}`;
 
