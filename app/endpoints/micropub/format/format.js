@@ -21,6 +21,7 @@ ${mp.name ? `name: ${mp.name}` : ''}
 ${mp.category ? `tags: [${ensureArray(mp.category).join(', ')}]
 ` : ''}${mp['in-reply-to'] ? `replyTo: ${mp['in-reply-to']}
 ` : ''}${mp['like-of'] ? `likeOf: ${mp['like-of']}
+` : ''}${mp['bookmark-of'] ? `bookmarkOf: ${mp['bookmark-of']}
 ` : ''}`.replace(/\n+/, '\n')
 
     const entry = `---${frontmatter}---
