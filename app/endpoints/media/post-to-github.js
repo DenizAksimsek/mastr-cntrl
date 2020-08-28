@@ -13,7 +13,7 @@ exports.mediaPost = function mediaPost(req, res) {
     const fileName = `${filenameID}.jpg`; //Need to identify other mimetypes
     const payload = req.files[0].buffer;
     const responseLocation = `/assets/entry/${publishedDate}/${fileName}`;
-    const fileLocation = `/assets/entry/${publishedDate}/${fileName}`;
+    const fileLocation = `assets/entry/${publishedDate}/${fileName}`;
     const commitMessage = 'Media created for blog post';
     const slack = require(appRootDirectory + '/app/slack/post-message-slack');
     let token;
