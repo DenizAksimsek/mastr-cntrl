@@ -8,12 +8,12 @@ const logger = require(appRootDirectory + '/app/logging/bunyan');
 const githubApi = require(appRootDirectory + '/app/github/post-to-api');
 
 exports.mediaPost = function mediaPost(req, res) {
-    const publishedDate = moment(new Date()).tz('Pacific/Auckland').format('YYYY-MM-DD');
+    const publishedDate = moment(new Date()).tz('Europe/Istanbul').format('YYYY-MM-DD');
     const filenameID = shortid.generate();
     const fileName = `${filenameID}.jpg`; //Need to identify other mimetypes
     const payload = req.files[0].buffer;
-    const responseLocation = `src/images/blog/${publishedDate}/${fileName}`;
-    const fileLocation = `src/images/blog/${publishedDate}`;
+    const responseLocation = `/assets/entry/${publishedDate}/${fileName}`;
+    const fileLocation = `/assets/entry/${publishedDate}`;
     const commitMessage = 'Media created for blog post';
     const slack = require(appRootDirectory + '/app/slack/post-message-slack');
     let token;
