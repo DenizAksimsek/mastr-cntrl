@@ -1,9 +1,8 @@
 const fetch = require('node-fetch');
 const logger = require(appRootDirectory + '/app/logging/bunyan');
-const syndicationOptions = require(appRootDirectory + '/app/data/syndication.json');
+const syndicationOptions = require(appRootDirectory + '/app/data/syndicate.js');
 const config = require(appRootDirectory + '/app/config.js');
 const indieauth = config.indieauth;
-let serviceIdentifier = '';
 
 /**
  Endpoint is used to return syndication options, to authorised clients only.
@@ -15,6 +14,7 @@ exports.micropubGet = function micropubGet(req, res) {
         'Accept' : 'application/json',
         'Authorization' : token
     };
+    const returnOptions = syndicationOptions.createJSON();
 
     function authResponse(response) {
         return response.json();
@@ -22,30 +22,29 @@ exports.micropubGet = function micropubGet(req, res) {
 
     function micropubResponse(json) {
         logger.info(JSON.stringify(json));
-        serviceIdentifier = json.client_id;
 
-        if (serviceIdentifier) {
-            logger.info('Service Is: ' + serviceIdentifier);
+        if (json.client_id) {
+            logger.info('Service Is: ' + json.client_id);
         } else {
             logger.info('No Service Declared');
         }
 
-        switch (req.query.q) {
-        case ('syndicate-to') :
-            res.json(syndicationOptions);
-            break;
-        case ('config') :
-            res.json(syndicationOptions);
-            break;
-        default:
+        if (token) {
+            logger.info('Indie Auth Token Received:');
+            switch (req.query.q) {
+            case ('syndicate-to') :
+                res.json(returnOptions);
+                break;
+            case ('config') :
+                res.json(returnOptions);
+                break;
+            default:
+                res.json({});
+            }
+        } else {
+            logger.info('No Indie Auth Token Received');
             res.json({});
         }
-    }
-
-    if (token) {
-        logger.info('Indie Auth Token Received:');
-    } else {
-        logger.info('No Indie Auth Token Received');
     }
 
     // Verify Token. If OK send syndication options or configuration
